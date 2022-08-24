@@ -76,7 +76,43 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         if let imageAnchor = anchor as? ARImageAnchor{
             
             //Identificar a magem do "AR Resource"
-            print(imageAnchor.referenceImage.name)
+            print("Imagem identificada: \(String(describing: imageAnchor.referenceImage.name))")
+            
+            // Posicionar um "Plane" em cima da imagem identificada
+            // Plane
+            let plane = SCNPlane(
+                width: imageAnchor.referenceImage.physicalSize.width,
+                height: imageAnchor.referenceImage.physicalSize.height
+            )
+            plane.firstMaterial?.diffuse.contents = UIColor(white: 2.0, alpha: 0.7)
+            
+            // Node
+            let planeNode = SCNNode(geometry: plane)
+            planeNode.eulerAngles.x = -Float.pi / 2 // Rotacionar o plane para ele ficar "em cima" da img.
+            node.addChildNode(planeNode)
+            
+            // Se for a carta do Vulpix
+            if imageAnchor.referenceImage.name == "vulpix"{
+                
+                // Criar o node do objeto 3d que vai abrigar o seu modelo.
+                if let myCubeScene = SCNScene(named: "art.scnassets/myCube.scn"){
+                    
+                    if let myCubeNode = myCubeScene.rootNode.childNodes.first{
+                        myCubeNode.eulerAngles.x = Float.pi / 2
+                        planeNode.addChildNode(myCubeNode)
+                        
+                    } else {
+                        print("-->Não identificou o first layer de myCube.snc")
+                    }
+    
+                } else {
+                    print("-->Não conseguiu trazer o objeto 3d myCube.snc")
+                }
+            }
+                
+            
+            
+            
         }
         
         return node
